@@ -26,8 +26,8 @@ class Transaction(Base):
 
     id: Mapped[int] = mapped_column(primary_key=True)
     game_id: Mapped[int] = mapped_column(ForeignKey("games.id"))
-    from_id: Mapped[int] = mapped_column(ForeignKey("players.id"), nullable=True)
-    to_id: Mapped[int] = mapped_column(ForeignKey("players.id"), nullable=True)
+    from_id: Mapped[int | None] = mapped_column(ForeignKey("players.id"))
+    to_id: Mapped[int | None] = mapped_column(ForeignKey("players.id"))
     amount: Mapped[int]
     type: Mapped[str]
     note: Mapped[str | None]

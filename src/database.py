@@ -15,5 +15,3 @@ SessionLocal = sessionmaker(bind=engine)
 
 class Base(DeclarativeBase):
     pass
-
-Base.metadata.create_all(engine)
