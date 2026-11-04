@@ -1,11 +1,13 @@
 import uvicorn
 from fastapi import FastAPI
-from database import Base, engine
-import models
+from api.users import router as user_router
+from core.database import db_manager, Base
 
 app = FastAPI()
 
-Base.metadata.create_all(bind=engine)
+app.include_router(user_router)
+
+Base.metadata.create_all(bind=db_manager.engine)
 
 @app.get("/")
 async def root():

@@ -1,7 +1,14 @@
 from datetime import datetime
 from sqlalchemy import ForeignKey, func
 from sqlalchemy.orm import Mapped, mapped_column
-from database import Base
+from app.core.database import Base
+from pydantic import BaseModel
+
+class PlayerCreate(BaseModel):
+    join_code: str
+    name: str
+    is_banker: bool = False
+    is_playing: bool = True
 
 class Game(Base):
     __tablename__ = "games"
