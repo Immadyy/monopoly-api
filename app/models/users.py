@@ -1,14 +1,7 @@
 from datetime import datetime
 from sqlalchemy import ForeignKey, func
 from sqlalchemy.orm import Mapped, mapped_column
-from app.core.database import Base
-from pydantic import BaseModel
-
-class PlayerCreate(BaseModel):
-    join_code: str
-    name: str
-    is_banker: bool = False
-    is_playing: bool = True
+from app.core.database import db_manager, Base
 
 class Game(Base):
     __tablename__ = "games"
@@ -39,3 +32,6 @@ class Transaction(Base):
     type: Mapped[str]
     note: Mapped[str | None]
     created_at: Mapped[datetime] = mapped_column(server_default=func.now())
+
+
+Base.metadata.create_all(bind=db_manager.engine)

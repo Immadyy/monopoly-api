@@ -13,7 +13,7 @@ class DatabaseManager:
         if not self.db_url:
             raise ValueError("Database URL must be provided or set in environment variables.")
         
-        self.engine = create_engine(self.db_url, echo=True)
+        self.engine = create_engine(self.db_url, echo=False)
         self.sessionlocal = sessionmaker(bind=self.engine, autoflush=False, autocommit=False)
 
     def get_db(self):
