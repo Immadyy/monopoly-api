@@ -29,7 +29,7 @@ class Transaction(Base):
     from_id: Mapped[int | None] = mapped_column(ForeignKey("players.id"))
     to_id: Mapped[int | None] = mapped_column(ForeignKey("players.id"))
     amount: Mapped[int]
-    type: Mapped[str]
+    type: Mapped[str] = mapped_column(default="transfer")
     note: Mapped[str | None]
     created_at: Mapped[datetime] = mapped_column(server_default=func.now())
 
