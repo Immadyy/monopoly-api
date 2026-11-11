@@ -1,29 +1,24 @@
 # Monopoly Banker API
-
 A backend for a digital banker and money tracker for the physical board game *International Business* (a Monopoly-style game). Players keep playing on the real board; the app replaces the paper money and the banker's notebook, so payments are fast, correct and visible to everyone at the table.
 
 > **Status: work in progress.** Built step by step as a learning project. See the roadmap below for what works today.
 
 ## Why
-
 In a long board game, paying rent, collecting salary and settling debts with paper money is slow and error-prone, and the banker has to keep track of everything. This API keeps every player's balance and records each money movement, so nobody has to do the maths or argue about who paid what.
 
 ## What it does (and doesn't)
-
 - Tracks **money only**. Properties, houses, rent, jail and passport stay on the physical board.
 - A game is created with a short **join code**; players join with that code.
 - Every payment is a **ledger entry** (who paid whom, how much, when). The bank is represented as "no player" (`NULL`) in the ledger.
 - All transactions are visible to everyone in the game, which keeps play honest.
 
 ## Tech stack
-
 - Python 3.13
 - [FastAPI](https://fastapi.tiangolo.com/)
 - [SQLAlchemy 2.0](https://docs.sqlalchemy.org/) with PostgreSQL
 - [uv](https://docs.astral.sh/uv/) for dependency management
 
 ## Project structure
-
 ```
 app/
   main.py          # FastAPI app and router registration
