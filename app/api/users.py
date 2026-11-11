@@ -1,12 +1,16 @@
 from fastapi import APIRouter, Depends, HTTPException, status
+import secrets, logging
+
 from app.core.database import db_manager
+
 from sqlalchemy.orm import Session
 from sqlalchemy import select, and_
 from sqlalchemy.exc import SQLAlchemyError
+
 import app.models.users as users
-from app.schemas.users import PlayerCreate 
-import secrets
-import logging
+
+from app.schemas.users import PlayerCreate, TransferCreate
+
 
 logger = logging.getLogger("uvicorn.error")
 
@@ -89,3 +93,25 @@ def add_player(data: PlayerCreate, db: Session = Depends(db_manager.get_db)):
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, 
             detail="An unexpected error occurred while joining the game."
         )
+
+
+@router.post("/transfer")
+def make_transfer(data: TransferCreate, db: Session = Depends(db_manager.get_db)):
+    sen = db.get(users.Player, data.sender_id)
+    rec = db.get(users.Player, data.receiver_id)
+
+    if not sen:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Item with id {data.sender_id} not found",
+        )
+    if not rec:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Item with id {data.receiver_id} not found",
+        )
+
+    return {
+        "sender_id": sen.name,
+        "receiver_id": rec.name
+    }
