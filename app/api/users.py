@@ -16,6 +16,21 @@ logger = logging.getLogger("uvicorn.error")
 
 router = APIRouter()
 
+
+def get_optional_player(db: Session, player_id: int | None) -> users.Player | None:
+    if player_id is None:
+        return None
+
+    player = db.get(users.Player, player_id)
+    if player is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Item with id {player_id} not found",
+        )
+
+    return player
+
+
 @router.post("/games")
 def create_game(db: Session = Depends(db_manager.get_db)):
     try:
@@ -97,33 +112,22 @@ def add_player(data: PlayerCreate, db: Session = Depends(db_manager.get_db)):
 
 @router.post("/transfer")
 def make_transfer(data: TransferCreate, db: Session = Depends(db_manager.get_db)):
-
     if data.sender_id is None and data.receiver_id is None:
         raise HTTPException(
             status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
             detail="atleast one player must have ID"
         )
 
-    sen = db.get(users.Player, data.sender_id) if data.sender_id is not None else None
-    rec = db.get(users.Player, data.receiver_id) if data.receiver_id is not None else None
+    sender = get_optional_player(db, data.sender_id)
+    receiver = get_optional_player(db, data.receiver_id)
 
-    if data.sender_id is not None and not sen:
+    if sender and receiver and sender.game_id != receiver.game_id:
         raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"Item with id {data.sender_id} not found",
+            status_code=status.HTTP_409_CONFLICT,
+            detail="players game_id did not match"
         )
-
-    if data.receiver_id is not None and not rec:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"Item with id {data.receiver_id} not found",
-        )
-
-
-    sender_name = sen.name if sen is not None else None
-    receiver_name = rec.name if rec is not None else None
 
     return {
-        "sender_id": sender_name,
-        "receiver_id": receiver_name
+        "sender_id": sender.name if sender else None,
+        "receiver_id": receiver.name if receiver else None,
     }
