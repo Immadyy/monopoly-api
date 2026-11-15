@@ -97,21 +97,33 @@ def add_player(data: PlayerCreate, db: Session = Depends(db_manager.get_db)):
 
 @router.post("/transfer")
 def make_transfer(data: TransferCreate, db: Session = Depends(db_manager.get_db)):
-    sen = db.get(users.Player, data.sender_id)
-    rec = db.get(users.Player, data.receiver_id)
 
-    if not sen:
+    if data.sender_id is None and data.receiver_id is None:
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
+            detail="atleast one player must have ID"
+        )
+
+    sen = db.get(users.Player, data.sender_id) if data.sender_id is not None else None
+    rec = db.get(users.Player, data.receiver_id) if data.receiver_id is not None else None
+
+    if data.sender_id is not None and not sen:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=f"Item with id {data.sender_id} not found",
         )
-    if not rec:
+
+    if data.receiver_id is not None and not rec:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=f"Item with id {data.receiver_id} not found",
         )
 
+
+    sender_name = sen.name if sen is not None else None
+    receiver_name = rec.name if rec is not None else None
+
     return {
-        "sender_id": sen.name,
-        "receiver_id": rec.name
+        "sender_id": sender_name,
+        "receiver_id": receiver_name
     }
